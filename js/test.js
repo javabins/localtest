@@ -85,15 +85,16 @@
 
 
     var providerTierNotes = '';
+    //if (document.forms[0].elements["TaskSectionReference"].value == "Tier1CompletionDetails") {
     if (document.forms[0].elements["TaskSectionReference"].value == "Tier1CompletionDetails") {
 
-        var sCase = window.parent.$('iframe[id=' + activeTier1IframeId + ']').contents().find('title').html().trim();
-        var interactiontier1 =  window.parent.$("label:contains('Interaction ID:')").text().split(":")[1].trim();
-        var scasetier1interaction = interactiontier1 + " " + sCase;
+            var sCase = window.parent.$('iframe[id=' + activeTier1IframeId + ']').contents().find('title').html().trim();
+            var interactiontier1 =  window.parent.$("label:contains('Interaction ID:')").text().split(":")[1].trim();
+            var scasetier1interaction = interactiontier1 + " " + sCase;
 
-        if(isAutodocEnabled){
-            if(sessionStorage.getItem("campaignName") === "Review Rx Benefits"
-                && sessionStorage.getItem('revRxBenScase') === scasetier1interaction) {
+            if(isAutodocEnabled){
+                if(sessionStorage.getItem("campaignName") === "Review Rx Benefits"
+                    && sessionStorage.getItem('revRxBenScase') === scasetier1interaction) {
                     if (sessionStorage.getItem(scasetier1interaction) !== null) {
 
                         providerTierNotes = sessionStorage.getItem(scasetier1interaction);
@@ -102,6 +103,7 @@
                     window.parent.$('iframe[id=' + activeTier1IframeId + ']').contents().find('#Comments').val(providerTierNotes);
                     sessionStorage.removeItem('revRxBenScase');
                     sessionStorage.removeItem(scasetier1interaction);
+                }
             }
         }
     }
@@ -128,20 +130,19 @@
     };
 
     function messageEvent(msg) {
-        if (msg.data) {
-            console.log('msg', msg);
-            sessionStorage.setItem('messageSuccess', 'success');
+        if(msg.data) {
             var data = msg.data.replace("Preference ", "").replace("Override ", "");
             var isNull = false;
-            if (window.parent.sessionStorage.getItem('autodocmnrrrxb') === null) {
-                window.parent.sessionStorage.setItem('autodocmnrrrxb', data);
+            if(window.parent.sessionStorage.getItem(scaseinteraction) === null) {
+                window.parent.sessionStorage.setItem(scaseinteraction, data);
                 isNull = true;
             } else {
-                appendToStorage('autodocmnrrrxb', data);
+                appendToStorage(scaseinteraction, data);
             }
             return false;
         }
     }
+
 
     function appendToStorage(name, data) {
         var old = window.parent.sessionStorage.getItem(name);
@@ -154,7 +155,6 @@
         console.log(newAuto);
         window.parent.sessionStorage.setItem(name, oldContainer += newAuto);
     }
-
 
     window.parent.openEzcomm =  function() {
 
