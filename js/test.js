@@ -1,8 +1,6 @@
 
 (function($, window, document, undefined) {
-  
-    console.log("============TEST============");
-  
+
     'use strict';
     // Get member sessionStorage from maestro
     var member_dataSession = JSON.parse(window.parent.sessionStorage.getItem("member_info"));
@@ -85,31 +83,29 @@
         return requestMetaDataMandRObj;
     }
 
+
     var providerTierNotes = '';
-    if (document.forms[0].elements["TaskSectionReference"] !== undefined) {
+    if (document.forms[0].elements["TaskSectionReference"].value == "Tier1CompletionDetails") {
 
-        if (document.forms[0].elements["TaskSectionReference"].value == "Tier1CompletionDetails") {
-            if (sessionStorage.getItem('autodocmnrrrxb') === null) {
-                sessionStorage.removeItem('tier1RevRxBenAutoDocEzcomm');
-            } else {
-                sessionStorage.setItem('tier1RevRxBenAutoDocEzcomm', sessionStorage.getItem('autodocmnrrrxb'));
-                sessionStorage.removeItem('autodocmnrrrxb');
-                if (sessionStorage.getItem('messageSuccess') !== null) {
-                    sessionStorage.removeItem('messageSuccess');
-                }
-            }
+        var sCase = window.parent.$('iframe[id=' + activeTier1IframeId + ']').contents().find('title').html().trim();
+        var interactiontier1 =  window.parent.$("label:contains('Interaction ID:')").text().split(":")[1].trim();
+        var scasetier1interaction = interactiontier1 + " " + sCase;
 
-            //TODO: ADD OPT_IN MESSAGE HERE..s
-            if (sessionStorage.getItem('campaignName') === "Review Rx Benefits") {
-                if (isAutodocEnabled) {
-                    if (sessionStorage.getItem('tier1RevRxBenAutoDocEzcomm') !== null) { // TODO: Storage name
-                        providerTierNotes = sessionStorage.getItem('tier1RevRxBenAutoDocEzcomm');
+        if(isAutodocEnabled){
+            if(sessionStorage.getItem("campaignName") === "Review Rx Benefits"
+                && sessionStorage.getItem('revRxBenScase') === scasetier1interaction) {
+                    if (sessionStorage.getItem(scasetier1interaction) !== null) {
+
+                        providerTierNotes = sessionStorage.getItem(scasetier1interaction);
+
                     }
-                }
-                window.parent.$('iframe[id=' + activeTier1IframeId + ']').contents().find('#Comments').val(providerTierNotes);
+                    window.parent.$('iframe[id=' + activeTier1IframeId + ']').contents().find('#Comments').val(providerTierNotes);
+                    sessionStorage.removeItem('revRxBenScase');
+                    sessionStorage.removeItem(scasetier1interaction);
             }
         }
     }
+
 
     var ezcommCore = {
         app: {
@@ -181,7 +177,7 @@
     var ezcommButtonVar = setInterval(addEzcommCoreLauncher, 1500);
     function addEzcommCoreLauncher() {
         if (window.parent.$('iframe[id=' + activeTier1IframeId + ']').contents().find("#ezcommLauncherButton").length === 0) {
-            window.parent.$('iframe[id=' + activeTier1IframeId + ']').contents().find("#SelPlanID").next().next().next().next().next().append(
+            window.parent.$('iframe[id=' + activeTier1IframeId + ']').contents().find("label:contains('Quoted Benefits Notes')").parent().parent().prepend(
                 '<button id="ezcommLauncherButton" onclick="window.parent.openEzcomm()" type="button" class="pzhc"  >' +
                 '<div class="pzbtn-rnd" >' +
                     '<div class="pzbtn-lft">' +
