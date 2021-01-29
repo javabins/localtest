@@ -6,6 +6,7 @@
     var member_dataSession = JSON.parse(window.parent.sessionStorage.getItem("member_info"));
     var ezcommCommunications;
     var scaseinteraction;
+    var householdIdReviews = getAttributeValue("pyWorkPage", "MemberID");
 
     var activeTier1IframeId = window.parent.$('div[id^="PegaWebGadget"]').filter(
         function() {
@@ -14,7 +15,7 @@
         return $(this).attr('aria-hidden') === "false";
     }).contents()[0].id;
 
-    if (document.forms[0].elements["TaskSectionReference"] !== undefined){
+    if (document.forms[0].elements["TaskSectionReference"].value == "UHG-MedRet-IIM-Work-ReviewRxBenefits"){
         var sCase = window.parent.$('iframe[id=' + activeTier1IframeId + ']').contents().find('title').html().trim();
         var interaction = window.parent.$("label:contains('Interaction ID:')").text().split(":")[1].trim();
         scaseinteraction = interaction + " " + sCase;
@@ -44,21 +45,39 @@
         var day = memberDob.substring(6, 8);
         memberDob = month + "/" + day + "/" + year;
 
-        ezcommMandRMemObj.version = "1.0";
+        ezcommMandRMemObj.version = "2.0";
         ezcommMandRMemObj.firstName = member_dataSession.member_first_name;
         ezcommMandRMemObj.lastName = member_dataSession.member_last_name;
         ezcommMandRMemObj.subscriberId = member_dataSession.member_id.split('-')[0];
-        ezcommMandRMemObj.policyId = null;
+
+        ezcommMandRMemObj.idTypeCode = "20202";
+        ezcommMandRMemObj.policyId = "0";
+        ezcommMandRMemObj.encryptedFlag = false;
         ezcommMandRMemObj.dateOfBirth = memberDob;
+        ezcommMandRMemObj.additionalIdentifiers = [{
+            id: householdIdReviews,
+            type: "GPSHID"
+        }];
         return ezcommMandRMemObj;
     }
 
     function requestMetaDataMandR() {
         var requestMetaDataMandRObj = {};
         requestMetaDataMandRObj.agentId = pega.d.pyUID;
-        requestMetaDataMandRObj.applicationName = "MAESTRO";
+        requestMetaDataMandRObj.applicationName = "MAESTRO-EZCOMM";
         requestMetaDataMandRObj.lineOfBusiness = "M&R";
-        requestMetaDataMandRObj.epmpEnabled = true;
+
+        var epmpObj = {};
+        epmpObj.enabled = true;
+        epmpObj.retrieveAllStatus = true;
+        epmpObj.allowUpdate = false;
+        requestMetaDataMandRObj.epmp = epmpObj;
+
+        var contactObj = {};
+        contactObj.enable_email = true;
+        contactObj.enable_sms = true;
+        contactObj.enable_fax = false;
+        requestMetaDataMandRObj.contact_info_settings = contactObj;
 
         var widgetObj = {};
         widgetObj.name = "MAESTRO-COVID19";
@@ -174,17 +193,9 @@
     var ezcommButtonVar = setInterval(addEzcommCoreLauncher, 1500);
     function addEzcommCoreLauncher() {
         if (window.parent.$('iframe[id=' + activeTier1IframeId + ']').contents().find("#ezcommLauncherButton").length === 0) {
-            window.parent.$('iframe[id=' + activeTier1IframeId + ']').contents().find("label:contains('Quoted Benefits Notes')").parent().parent().prepend(
-                '<button id="ezcommLauncherButton" onclick="window.parent.openEzcomm()" type="button" class="pzhc"  >' +
-                '<div class="pzbtn-rnd" >' +
-                '<div class="pzbtn-lft">' +
-                '<div class="pzbtn-rgt" >' +
-                '<div class="pzbtn-mid" ><img src="webwb/zblankimage.gif" alt="" class="pzbtn-i" onclick="window.parent.openEzcomm()">EZComm</div>' +
-                '</div>' +
-                '   </div>' +
-                '</div>' +
-                '</button>');
+            window.parent.$('iframe[id=' + activeTier1IframeId + ']').contents().find("#SelPlanID").parent().parent().parent().append(
+                '<button id="ezcommLauncherButton" onclick="window.parent.openEzcomm()" type="button" class="pzhc"  ><div class="pzbtn-rnd" ><div class="pzbtn-lft"><div class="pzbtn-rgt" ><div class="pzbtn-mid" ><img src="webwb/zblankimage.gif" alt="" class="pzbtn-i" onclick="window.parent.openEzcomm()">EZComm</div></div></div></div></button>');
         }
-    };
+    }
 
 }(jQuery, window, document));
