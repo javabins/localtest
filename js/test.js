@@ -181,7 +181,7 @@
     var ezcommButtonVar = setInterval(addEzcommCoreLauncher, 1500);
     function addEzcommCoreLauncher() {
         if (window.parent.$('iframe[id=' + activeTier1IframeId + ']').contents().find("#ezcommLauncherButton").length === 0) {
-            window.parent.$('iframe[id=' + activeTier1IframeId + ']').contents().find("#SelPlanID").parent().parent().next().append(
+            window.parent.$('iframe[id=' + activeTier1IframeId + ']').contents().find("#SelPlanID").next().next().next().next().next()append(
                 '<button id="ezcommLauncherButton" onclick="window.parent.openEzcomm()" type="button" class="pzhc"  >' +
                 '<div class="pzbtn-rnd" >' +
                     '<div class="pzbtn-lft">' +
